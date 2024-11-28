@@ -13,10 +13,28 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const posts = await loadPostsCollection();
     await posts.insertOne({
-        text: req.body.text,
-        createdAt: new Date()
+        title: req.body.title,
+        description: req.body.description,
+        deadline: req.body.deadline,
+        priority: req.body.priority,
+        isComplete: req.body.isComplete
     });
     res.status(201).send();
+});
+
+//Update Posts
+router.post('/:id', async (req, res) => {
+    const posts = await loadPostsCollection();
+    const updatedTask = {
+        $set: {
+            description: req.body.description,
+            deadline: req.body.deadline,
+            priority: req.body.priority,
+            isComplete: req.body.isComplete
+        },
+    }
+    await posts.updateOne({_id: new mongodb.ObjectId(req.params.id)}, updatedTask);
+    res.status(200).send();
 });
 
 //Delete Posts
@@ -30,7 +48,7 @@ router.delete('/:id', async (req, res) => {
 async function loadPostsCollection() {
     const client = await mongodb.MongoClient.connect('mongodb+srv://shannonGriswold:FullStack@fullstackproject3.nyzxi.mongodb.net/?retryWrites=true&w=majority&appName=FullStackProject3');
 
-    return client.db('FullStack').collection('posts');
+    return client.db('FullStack').collection('tasks');
 }
 
 module.exports = router;

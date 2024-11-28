@@ -11,20 +11,39 @@ class PostService {
               resolve(
                 data.map(post => ({
                   ...post,
-                  createdAt: new Date(post.createdAt)
                 }))
               )
             })
             .catch((err) => {
               reject(err)
             })
+            // try {
+            //   resolve([{title: "hello", description: "hi", priority: "high", deadline:"hihihihhhihihihihih", isComplete: false}]);
+            // } catch(err) {
+            //   reject(err);
+            // }
           })
     }
 
     //Create Post
-    static insertPost(text) {
+    static insertPost(task) {
         return axios.post(url, {
-            text: text,
+            title: task.title,
+            description: task.description,
+            deadline: task.deadline,
+            priority: task.priority,
+            isComplete: false
+        });
+    }
+
+    //Update Post
+    static updatePost(task) {
+        return axios.post(`${url}${task._id}`, {
+            title: task.title,
+            description: task.description,
+            deadline: task.deadline,
+            priority: task.priority,
+            isComplete: task.isComplete
         });
     }
 

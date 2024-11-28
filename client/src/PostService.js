@@ -5,28 +5,12 @@ const url = 'api/posts/';
 class PostService {
     //Get Posts
     static getPosts() {
-        // return new Promise(async (resolve, reject) => {
-        //     try {
-        //         const res = await axios.get(url);
-        //         const data = res.data;
-        //         resolve(
-        //             data.map(post => ({
-        //                 ...post,
-        //                 createdAt: new Date(post.createdAt)
-        //             }))
-        //         );
-        //     } catch(err) {
-        //         reject(err);
-        //     }
-        // });
-
         return new Promise((resolve, reject) => {
             axios.get(url).then((res) => {
               const data = res.data
               resolve(
                 data.map(post => ({
                   ...post,
-                  createdAt: new Date(post.createdAt)
                 }))
               )
             })
@@ -37,9 +21,13 @@ class PostService {
     }
 
     //Create Post
-    static insertPost(text) {
+    static insertPost(task) {
         return axios.post(url, {
-            text: text,
+            title: task.title,
+            description: task.description,
+            deadline: task.deadline,
+            priority: task.priority,
+            isComplete: false
         });
     }
 

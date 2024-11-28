@@ -1,3 +1,29 @@
+<script setup>
+import PostService from '../PostService'
+import { ref } from 'vue';
+
+const posts = ref([]);
+const error = ref("");
+const text = ref("");
+
+try {
+    posts.value = await PostService.getPosts();
+} catch(err) {
+    error.value = err.message;
+}
+
+    
+async function createPost() {
+    await PostService.insertPost(text.value);
+    posts.value = await PostService.getPosts();
+}
+async function deletePost(id) {
+    await PostService.deletePost(id);
+    posts.value = await PostService.getPosts();
+}
+
+</script>
+
 <template>
     <div class = "container">
         <h1>Latest Posts</h1>
@@ -21,38 +47,6 @@
         </div>
     </div>
 </template>
-
-<script>
-import PostService from '../PostService'
-
-export default {
-    name: 'PostComponent',
-    data() {
-        return {
-            posts: [],
-            error: '',
-            text: '',
-        }
-    },
-    async created() {
-        try {
-            this.posts = await PostService.getPosts();
-        } catch(err) {
-            this.error = err.message;
-        }
-    },
-    methods: {
-        async createPost() {
-            await PostService.insertPost(this.text);
-            this.posts = await PostService.getPosts();
-        },
-        async deletePost(id) {
-            await PostService.deletePost(id);
-            this.posts = await PostService.getPosts();
-        }
-    }
-}
-</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>

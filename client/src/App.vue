@@ -1,20 +1,16 @@
+<script setup>
+import PostComponent from './components/PostComponent.vue'
+
+</script>
+
 <template>
   <div id = "app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <PostComponent />
+    <Suspense>
+      <PostComponent />
+    </Suspense>
   </div>
 </template>
-
-<script>
-import PostComponent from './components/PostComponent.vue'
-
-export default {
-  name: 'App',
-  components: {
-    PostComponent
-  }
-}
-</script>
 
 <style>
 #app {

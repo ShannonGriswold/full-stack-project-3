@@ -1,11 +1,8 @@
 <script setup>
 /* eslint-disable vue/no-v-model-argument*/
-//import PostComponent from './components/PostComponent.vue';
-/* eslint-disable */
-
+//The above disable is becuase that rule is best practice for Vue 2, but that syntax is acceptable and recommended in the documentation for Vue 3
+import PostComponent from './components/PostComponent.vue';
 import PostService from './PostService';
-/* eslint-enable */
-
 import { ref, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 
@@ -17,16 +14,18 @@ const taskList = ref([]);
 const addOrUpdate = ref(true);
 const error = ref("");
 
-try {
-    console.log("retreiving tasks");
-    //taskList.value = await PostService.getPosts();
-    console.log("retrieved tasks");
-    console.log(taskList.value);
-} catch(err) {
-    error.value = err.message;
+async function updateTaskList() {
+    try {
+        taskList.value = await PostService.getPosts();
+    } catch(err) {
+        error.value = err.message;
+    }
 }
 
+updateTaskList();
+
 const taskForDialog = ref({
+    _id: '',
     title: '',
     description: '',
     deadline: '',
@@ -34,10 +33,11 @@ const taskForDialog = ref({
     index: -1,
 });
 
-//Closes the dialog and resets the task to display in dialog
+// Closes the dialog and resets the task to display in dialog
 function closeDialog() {
     dialog.value = false;
     taskForDialog.value = {
+        _id: '',
         title: '',
         description: '',
         deadline: '',
@@ -47,76 +47,45 @@ function closeDialog() {
 }
 
 //Adds the task from the dialog to the list
-/* eslint-disable */
-
 async function addTask() {
-    // let newTask = {
-    //     title: taskForDialog.value.title,
-    //     description: taskForDialog.value.description,
-    //     deadline: taskForDialog.value.deadline,
-    //     priority: taskForDialog.value.priority,
-    //     complete: ref(false),
-    // };
-    // taskList.value.push(newTask);
-    // try {
-    //     taskList.value = await PostService.getPosts();
-    // } catch(err) {
-    //     error.value = err.message;
-    // }
+    await updateTaskList()
     closeDialog();
     toast.success('Task added successfully!');
 }
-/* eslint-enable */
 
 
 //Deletes a task from the list
-/* eslint-disable */
-
 async function deleteTask(index) {
-    // taskList.value.splice(index, 1);
-    // await PostService.deletePost(taskList[index]._id);
-    // try {
-    //     taskList.value = await PostService.getPosts();
-    // } catch(err) {
-    //     error.value = err.message;
-    // }
+    await PostService.deletePost(taskList.value[index]._id);
+    await updateTaskList()
     toast.success('Task deleted successfully!');
 }
 
 
 //updates a task
-function updateTask() {
-    taskList.value[taskForDialog.value.index].description =
-        taskForDialog.value.description;
-    taskList.value[taskForDialog.value.index].deadline =
-        taskForDialog.value.deadline;
-    taskList.value[taskForDialog.value.index].priority =
-        taskForDialog.value.priority;
-    addOrUpdate.value = true;
+async function updateTask() {
+    await updateTaskList();
     closeDialog();
+    addOrUpdate.value = true;
     toast.success('Task updated successfully!');
 }
-/* eslint-enable */
 
 //Opens the update dialog and tells it what task to display
-/* eslint-disable */
 function openUpdateDialog(index) {
-    // taskForDialog.value = {
-    //     title: taskList.value[index].title,
-    //     description: taskList.value[index].description,
-    //     deadline: taskList.value[index].deadline,
-    //     priority: taskList.value[index].priority,
-    //     index: index,
-    // };
-    // addOrUpdate.value = false;
-    // dialog.value = true;
-
+    taskForDialog.value = {
+        _id: taskList.value[index]._id,
+        title: taskList.value[index].title,
+        description: taskList.value[index].description,
+        deadline: taskList.value[index].deadline,
+        priority: taskList.value[index].priority,
+        isComplete: taskList.value[index].isComplete,
+        index: index,
+    };
+    addOrUpdate.value = false;
+    dialog.value = true;
 }
-/* eslint-enable */
 
 //Returns if the given title is unique
-/* eslint-disable */
-
 function validateUniqueTitle(title) {
     for (let i = 0; i < taskList.value.length; i++) {
         if (taskList.value[i].title == title) {
@@ -125,9 +94,13 @@ function validateUniqueTitle(title) {
     }
     return true;
 }
-/* eslint-enable */
 
-
+//Updates the complete status of a task
+async function updateIsComplete(task, event) {
+    task.isComplete = event.target.checked;
+    await PostService.updatePost(task);
+    await updateTaskList();
+}
 </script>
 
 <template>
@@ -161,7 +134,7 @@ function validateUniqueTitle(title) {
             </tr>
         </thead>
         <tbody>
-            <!--<tr v-for="(task, index) in taskList" :key="task.title">
+            <tr v-for="(task, index) in taskList" :key="task.title">
                 <td class="text-center">{{ task.title }}</td>
                 <td class="text-center">{{ task.description }}</td>
                 <td class="text-center">
@@ -177,12 +150,12 @@ function validateUniqueTitle(title) {
                 <td class="text-center">
                     <v-checkbox-btn
                         :id="'checkbox' + index"
-                        v-model="task.complete"
+                        @change="updateIsComplete(task, $event)"
                         class="d-inline-flex align-center"
                     ></v-checkbox-btn>
                 </td>
                 <td class="text-center pa-4">
-                    <template v-if="!task.complete">
+                    <template v-if="!task.isComplete">
                         <v-btn
                             color="blue-darken-1"
                             @click="openUpdateDialog(index)"
@@ -210,11 +183,10 @@ function validateUniqueTitle(title) {
                         >DELETE
                     </v-btn>
                 </td>
-            </tr>-->
+            </tr>
         </tbody>
     </v-table>
-    <!--<Suspense> -->
-      <!--<PostComponent 
+      <PostComponent 
         @add-task="addTask"
         @close-dialog="closeDialog"
         @update-task="updateTask"
@@ -222,8 +194,7 @@ function validateUniqueTitle(title) {
         :titleValidation="validateUniqueTitle"
         v-model:dialog="dialog"
         v-model:taskModel="taskForDialog"
-        />-->
-    <!--</Suspense>-->
+        />
   </div>
 </template>
 

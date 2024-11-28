@@ -2,15 +2,6 @@
 import PostService from '../PostService'
 import { ref, defineModel, defineProps, defineEmits } from 'vue';
 
-// const posts = ref([]);
-
-
-// try {
-//     posts.value = await PostService.getPosts();
-// } catch(err) {
-    
-// }
-
 const taskModel = defineModel('taskModel');
 const dialog = defineModel('dialog');
 const emit = defineEmits(['close-dialog', 'add-task', 'update-task']);
@@ -29,18 +20,12 @@ const errorMessages = ref({
     priorityError: '',
 });
 
-    
-// async function createPost() {
-//     await PostService.insertPost(taskModel);
-//     posts.value = await PostService.getPosts();
-// }
-// async function deletePost(id) {
-//     await PostService.deletePost(id);
-//     posts.value = await PostService.getPosts();
-// }
-
 async function createPost() {
-    await PostService.insertPost(taskModel);
+    await PostService.insertPost(taskModel.value);
+}
+
+async function updatePost() {
+    await PostService.updatePost(taskModel.value);
 }
 
 //Tell parent to close the dialog
@@ -55,7 +40,7 @@ function closeDialog() {
 }
 
 //Validate if the task is filled out and tell parent to add or update
-function validateTask(adding) {
+async function validateTask(adding) {
     let filledOut = true;
     //If adding a new task need to validate title
     if (adding) {
@@ -93,9 +78,10 @@ function validateTask(adding) {
     //If properly filled out tell parent to add or update
     if (filledOut) {
         if (adding) {
-            createPost();
+            await createPost();
             emit('add-task');
         } else {
+            await updatePost();
             emit('update-task');
         }
     }
@@ -103,31 +89,6 @@ function validateTask(adding) {
 </script>
 
 <template>
-    <!--<div class = "container">
-        <h1>Latest Posts</h1>
-        <div class = "create-post">
-            <label for="create-post">Say Something...</label>
-            <input type="text" id = "create-post" v-model="text" placeholder="Create a post">
-            <button v-on:click="createPost">Post!</button>
-        </div>
-        <hr>
-        <p class = "error" v-if="error">{{ error }}</p>
-        <div 
-            class = "post"
-            v-for="(post, index) in posts"
-            v-bind:item="post"
-            v-bind:index="index"
-            v-bind:key="post._id"
-            v-on:dblclick="deletePost(post._id)"
-        >
-            {{`${post.createdAt.getDate()}/${post.createdAt.getMonth()}/${post.createdAt.getFullYear()}`}}
-            <p class = "text">{{post.text}}</p>
-        </div>
-    </div>-->
-
-
-
-
     <v-dialog max-width="400" v-model="dialog">
         <template v-slot:default>
             <v-card v-click-outside="closeDialog">

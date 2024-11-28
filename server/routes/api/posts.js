@@ -22,6 +22,21 @@ router.post('/', async (req, res) => {
     res.status(201).send();
 });
 
+//Update Posts
+router.post('/:id', async (req, res) => {
+    const posts = await loadPostsCollection();
+    const updatedTask = {
+        $set: {
+            description: req.body.description,
+            deadline: req.body.deadline,
+            priority: req.body.priority,
+            isComplete: req.body.isComplete
+        },
+    }
+    await posts.updateOne({_id: new mongodb.ObjectId(req.params.id)}, updatedTask);
+    res.status(200).send();
+});
+
 //Delete Posts
 router.delete('/:id', async (req, res) => {
     const posts = await loadPostsCollection();

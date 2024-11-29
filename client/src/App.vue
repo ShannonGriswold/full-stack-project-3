@@ -6,109 +6,99 @@ import PostService from './PostService';
 import { ref, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 
-defineEmits(['close-dialog', 'add-task', 'update-task']);
+defineEmits(['close-dialog', 'add-book', 'update-book']);
 
 const toast = useToast();
 const dialog = ref(false);
-const taskList = ref([]);
+const bookList = ref([]);
 const addOrUpdate = ref(true);
 const error = ref("");
 
-async function updateTaskList() {
+async function updateBookList() {
     try {
-        taskList.value = await PostService.getPosts();
+        bookList.value = await PostService.getBooks();
     } catch(err) {
         error.value = err.message;
     }
+    console.log(bookList.value);
 }
 
-updateTaskList();
+updateBookList();
 
-const taskForDialog = ref({
-    _id: '',
-    title: '',
-    description: '',
-    deadline: '',
-    priority: '',
-    index: -1,
-});
+const bookForDialog = ref(null);
 
-// Closes the dialog and resets the task to display in dialog
+// Closes the dialog and resets the book to display in dialog
 function closeDialog() {
     dialog.value = false;
-    taskForDialog.value = {
-        _id: '',
-        title: '',
-        description: '',
-        deadline: '',
-        priority: '',
-        index: -1,
-    };
+    bookForDialog.value = null;
 }
 
-//Adds the task from the dialog to the list
-async function addTask() {
-    await updateTaskList()
+//Adds the book from the dialog to the list
+async function addBook() {
+    await updateBookList()
     closeDialog();
-    toast.success('Task added successfully!');
+    toast.success('Book added successfully!');
 }
 
 
-//Deletes a task from the list
-async function deleteTask(index) {
-    await PostService.deletePost(taskList.value[index]._id);
-    await updateTaskList()
-    toast.success('Task deleted successfully!');
+//Deletes a book from the list
+async function deleteBook(id) {
+    await PostService.deleteBook(id);
+    await updateBookList()
+    toast.success('Book deleted successfully!');
 }
 
 
-//updates a task
-async function updateTask() {
-    await updateTaskList();
+//updates a book
+async function updateBook() {
+    await updateBookList();
     closeDialog();
     addOrUpdate.value = true;
-    toast.success('Task updated successfully!');
+    toast.success('Book updated successfully!');
 }
 
-//Opens the update dialog and tells it what task to display
-function openUpdateDialog(index) {
-    taskForDialog.value = {
-        _id: taskList.value[index]._id,
-        title: taskList.value[index].title,
-        description: taskList.value[index].description,
-        deadline: taskList.value[index].deadline,
-        priority: taskList.value[index].priority,
-        isComplete: taskList.value[index].isComplete,
-        index: index,
-    };
+//Opens the update dialog and tells it what book to display
+function openUpdateDialog(id) {
+    // bookForDialog.value = {
+    //     _id: bookList.value[index]._id,
+    //     title: bookList.value[index].title,
+    //     author: bookList.value[index].author,
+    //     status: bookList.value[index].status,
+    //     series: bookList.value[index].series,
+    //     genre: bookList.value[index].genre,
+    //     format: bookList.value[index].format,
+    //     notes: bookList.value[index].notes,
+    //     index: index,
+    // };
+    bookForDialog.value = id;
     addOrUpdate.value = false;
     dialog.value = true;
 }
 
 //Returns if the given title is unique
 function validateUniqueTitle(title) {
-    for (let i = 0; i < taskList.value.length; i++) {
-        if (taskList.value[i].title == title) {
+    for (let i = 0; i < bookList.value.length; i++) {
+        if (bookList.value[i].title == title) {
             return false;
         }
     }
     return true;
 }
 
-//Updates the complete status of a task
-async function updateIsComplete(task, event) {
-    task.isComplete = event.target.checked;
-    await PostService.updatePost(task);
-    await updateTaskList();
-}
+//Updates the complete status of a book
+// async function updateIsComplete(book, event) {
+//     book.isComplete = event.target.checked;
+//     await PostService.updateBook(book);
+//     await updateBookList();
+// }
 </script>
 
 <template>
   <div id = "app">
     <v-toolbar color="primary">
         <v-toolbar-title class="text-center">
-            <i class="fa fa-bars" aria-hidden="true"></i>
-            FRAMEWORKS
+            <i class="fa fa-book" aria-hidden="true"></i>
+            Book Tracker
         </v-toolbar-title>
         <v-btn
             variant="elevated"
@@ -126,53 +116,41 @@ async function updateIsComplete(task, event) {
         <thead color="primary">
             <tr>
                 <th class="text-center">Title</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">Deadline</th>
-                <th class="text-center">Priority</th>
-                <th class="text-center">Is Complete</th>
+                <th class="text-center">Author</th>
+                <th class="text-center">Reading Status</th>
+                <th class="text-center">Series</th>
+                <th class="text-center">Genre</th>
+                <th class="text-center">Format</th>
+                <th class="text-center">Notes</th>
                 <th class="text-center">Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(task, index) in taskList" :key="task.title">
-                <td class="text-center">{{ task.title }}</td>
-                <td class="text-center">{{ task.description }}</td>
-                <td class="text-center">
-                    {{
-                        task.deadline.substring(5, 7) +
-                        '/' +
-                        task.deadline.substring(8) +
-                        '/' +
-                        (task.deadline.substring(0, 4) % 100)
-                    }}
-                </td>
-                <td class="text-center">{{ task.priority }}</td>
-                <td class="text-center">
-                    <v-checkbox-btn
-                        :id="'checkbox' + index"
-                        @change="updateIsComplete(task, $event)"
-                        class="d-inline-flex align-center"
-                    ></v-checkbox-btn>
-                </td>
+            <tr v-for="(book) in bookList" :key="book.title">
+                <td class="text-center">{{ book.title }}</td>
+                <td class="text-center">{{ book.author }}</td>
+                <td class="text-center">{{ book.status }}</td>
+                <td class="text-center">{{ book.series }}</td>
+                <td class="text-center">{{ book.genre }}</td>
+                <td class="text-center">{{ book.format }}</td>
+                <td class="text-center">{{ book.notes }}</td>
                 <td class="text-center pa-4">
-                    <template v-if="!task.isComplete">
-                        <v-btn
-                            color="blue-darken-1"
-                            @click="openUpdateDialog(index)"
-                            class="w-50"
-                            min-width="100"
-                        >
-                            <i
-                                class="fa fa-pencil-square-o mr-1"
-                                aria-hidden="true"
-                            ></i
-                            >UPDATE
-                        </v-btn>
-                        <br />
-                    </template>
+                    <v-btn
+                        color="blue-darken-1"
+                        @click="openUpdateDialog(book._id)"
+                        class="w-50"
+                        min-width="100"
+                    >
+                        <i
+                            class="fa fa-pencil-square-o mr-1"
+                            aria-hidden="true"
+                        ></i
+                        >UPDATE
+                    </v-btn>
+                    <br />
                     <v-btn
                         color="red"
-                        @click="deleteTask(index)"
+                        @click="deleteBook(book._id)"
                         class="w-50"
                         min-width="100"
                     >
@@ -187,13 +165,13 @@ async function updateIsComplete(task, event) {
         </tbody>
     </v-table>
       <PostComponent 
-        @add-task="addTask"
+        @add-book="addBook"
         @close-dialog="closeDialog"
-        @update-task="updateTask"
+        @update-book="updateBook"
         :add="addOrUpdate"
         :titleValidation="validateUniqueTitle"
         v-model:dialog="dialog"
-        v-model:taskModel="taskForDialog"
+        v-model:bookModel="bookForDialog"
         />
   </div>
 </template>

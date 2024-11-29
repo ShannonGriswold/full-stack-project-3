@@ -112,70 +112,81 @@ function validateUniqueTitle(title) {
             <i class="fa fa-plus-circle mr-1" aria-hidden="true"></i>ADD
         </v-btn>
     </v-toolbar>
-    <v-table color="primary">
-        <thead color="primary">
-            <tr>
-                <th class="text-center">Title</th>
-                <th class="text-center">Author</th>
-                <th class="text-center">Reading Status</th>
-                <th class="text-center">Series</th>
-                <th class="text-center">Genre</th>
-                <th class="text-center">Format</th>
-                <th class="text-center">Notes</th>
-                <th class="text-center">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(book) in bookList" :key="book.title">
-                <td class="text-center">{{ book.title }}</td>
-                <td class="text-center">{{ book.author }}</td>
-                <td class="text-center">{{ book.status }}</td>
-                <td class="text-center">{{ book.series }}</td>
-                <td class="text-center">{{ book.genre }}</td>
-                <td class="text-center">{{ book.format }}</td>
-                <td class="text-center">{{ book.notes }}</td>
-                <td class="text-center pa-4">
-                    <v-btn
-                        color="blue-darken-1"
-                        @click="openUpdateDialog(book._id)"
-                        class="w-50"
-                        min-width="100"
-                    >
-                        <i
-                            class="fa fa-pencil-square-o mr-1"
-                            aria-hidden="true"
-                        ></i
-                        >UPDATE
-                    </v-btn>
-                    <br />
-                    <v-btn
-                        color="red"
-                        @click="deleteBook(book._id)"
-                        class="w-50"
-                        min-width="100"
-                    >
-                        <i
-                            class="fa fa-times-circle mr-1"
-                            aria-hidden="true"
-                        ></i
-                        >DELETE
-                    </v-btn>
-                </td>
-            </tr>
-        </tbody>
-    </v-table>
-      <PostComponent 
-        @add-book="addBook"
-        @close-dialog="closeDialog"
-        @update-book="updateBook"
-        :add="addOrUpdate"
-        :titleValidation="validateUniqueTitle"
-        v-model:dialog="dialog"
-        v-model:bookModel="bookForDialog"
-        />
+    <div id = "main" class = "h-100">
+        <v-table color="primary" id = "book-table">
+            <thead color="primary">
+                <tr>
+                    <th class="text-center">Title</th>
+                    <th class="text-center">Author</th>
+                    <th class="text-center">Reading Status</th>
+                    <th class="text-center">Series</th>
+                    <th class="text-center">Genre</th>
+                    <th class="text-center">Format</th>
+                    <th class="text-center">Notes</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(book) in bookList" :key="book.title">
+                    <td class="text-center">{{ book.title }}</td>
+                    <td class="text-center">{{ book.author }}</td>
+                    <td class="text-center">{{ book.status }}</td>
+                    <td class="text-center">{{ book.series }}</td>
+                    <td class="text-center">{{ book.genre }}</td>
+                    <td class="text-center">{{ book.format }}</td>
+                    <td class="text-center">{{ book.notes }}</td>
+                    <td class="text-center pa-4">
+                        <v-btn
+                            color="blue-darken-1"
+                            @click="openUpdateDialog(book._id)"
+                            class="w-50"
+                            min-width="100"
+                        >
+                            <i
+                                class="fa fa-pencil-square-o mr-1"
+                                aria-hidden="true"
+                            ></i
+                            >UPDATE
+                        </v-btn>
+                        <br />
+                        <v-btn
+                            color="red"
+                            @click="deleteBook(book._id)"
+                            class="w-50"
+                            min-width="100"
+                        >
+                            <i
+                                class="fa fa-times-circle mr-1"
+                                aria-hidden="true"
+                            ></i
+                            >DELETE
+                        </v-btn>
+                    </td>
+                </tr>
+            </tbody>
+        </v-table>
+        <PostComponent 
+            @add-book="addBook"
+            @close-dialog="closeDialog"
+            @update-book="updateBook"
+            :add="addOrUpdate"
+            :titleValidation="validateUniqueTitle"
+            v-model:dialog="dialog"
+            v-model:bookModel="bookForDialog"
+            />
+    </div>
   </div>
 </template>
 
 <style>
-
+#main {
+    background-color: #402102;
+    background-image: url("./assets/background.png");
+    background-repeat: repeat;
+}
+#book-table {
+    width: 75%;
+    min-width: 1000px;
+    margin: auto;
+}
 </style>

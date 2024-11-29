@@ -1,26 +1,41 @@
 <script setup>
 import PostService from '../PostService'
-import { ref, defineModel, defineProps, defineEmits, watch } from 'vue';
+import { ref, defineModel, defineProps, defineEmits } from 'vue';
 const bookModelValue = defineModel('bookModel');
 const bookModel = ref({});
-watch(bookModelValue, async (newValue) => {
-    if(newValue != null) {
-        bookModel.value = await PostService.getBook(newValue);
-        console.log(bookModel.value);
-    } else {
-        bookModel.value = {
-            _id: null,
-            title: '',
-            author: '',
-            status: '',
-            series: '',
-            genre: '',
-            format: '',
-            notes: '',
-        };
-    }
-});
-const dialog = defineModel('dialog');
+if(bookModelValue.value != null) {
+    bookModel.value = await PostService.getBook(bookModelValue.value);
+    console.log(bookModel.value);
+} else {
+    bookModel.value = {
+        _id: null,
+        title: '',
+        author: '',
+        status: '',
+        series: '',
+        genre: '',
+        format: '',
+        notes: '',
+    };
+}
+// watch(bookModelValue, async (newValue) => {
+//     if(newValue != null) {
+//         bookModel.value = await PostService.getBook(newValue);
+//         console.log(bookModel.value);
+//     } else {
+//         bookModel.value = {
+//             _id: null,
+//             title: '',
+//             author: '',
+//             status: '',
+//             series: '',
+//             genre: '',
+//             format: '',
+//             notes: '',
+//         };
+//     }
+// });
+// const dialog = defineModel('dialog');
 const emit = defineEmits(['close-dialog', 'add-book', 'update-book']);
 
 //The properties for this component
@@ -97,8 +112,6 @@ async function validateBook(adding) {
 </script>
 
 <template>
-    <v-dialog max-width="400" v-model="dialog" persistent>
-        <template v-slot:default>
             <v-card>
                 <v-toolbar color="primary">
                     <v-toolbar-title v-if="props.add">
@@ -221,8 +234,6 @@ async function validateBook(adding) {
                     </v-card-actions>
                 </v-form>
             </v-card>
-        </template>
-    </v-dialog>
 </template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

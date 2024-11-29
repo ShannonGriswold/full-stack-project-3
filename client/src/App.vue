@@ -2,56 +2,57 @@
 /* eslint-disable vue/no-v-model-argument*/
 //The above disable is becuase that rule is best practice for Vue 2, but that syntax is acceptable and recommended in the documentation for Vue 3
 import PostComponent from './components/PostComponent.vue';
-import PostService from './PostService';
+import BookListComponent from './components/BookListComponent.vue'
+// import PostService from './PostService';
 import { ref, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 
 defineEmits(['close-dialog', 'add-book', 'update-book']);
 
 const toast = useToast();
-const dialog = ref(false);
-const bookList = ref([]);
+// const bookList = ref([]);
 const addOrUpdate = ref(true);
-const error = ref("");
+// const error = ref("");
+const viewList = ref(true);
 
-async function updateBookList() {
-    try {
-        bookList.value = await PostService.getBooks();
-    } catch(err) {
-        error.value = err.message;
-    }
-    console.log(bookList.value);
-}
+// async function updateBookList() {
+//     try {
+//         bookList.value = await PostService.getBooks();
+//     } catch(err) {
+//         error.value = err.message;
+//     }
+//     console.log(bookList.value);
+// }
 
-updateBookList();
+// updateBookList();
 
 const bookForDialog = ref(null);
 
 // Closes the dialog and resets the book to display in dialog
 function closeDialog() {
-    dialog.value = false;
+    viewList.value = true;
     bookForDialog.value = null;
 }
 
 //Adds the book from the dialog to the list
 async function addBook() {
-    await updateBookList()
+    // await updateBookList()
     closeDialog();
     toast.success('Book added successfully!');
 }
 
 
 //Deletes a book from the list
-async function deleteBook(id) {
-    await PostService.deleteBook(id);
-    await updateBookList()
-    toast.success('Book deleted successfully!');
-}
+// async function deleteBook(id) {
+//     await PostService.deleteBook(id);
+//     await updateBookList()
+//     toast.success('Book deleted successfully!');
+// }
 
 
 //updates a book
 async function updateBook() {
-    await updateBookList();
+    // await updateBookList();
     closeDialog();
     addOrUpdate.value = true;
     toast.success('Book updated successfully!');
@@ -72,18 +73,24 @@ function openUpdateDialog(id) {
     // };
     bookForDialog.value = id;
     addOrUpdate.value = false;
-    dialog.value = true;
+    viewList.value = false;
 }
 
-//Returns if the given title is unique
-function validateUniqueTitle(title) {
-    for (let i = 0; i < bookList.value.length; i++) {
-        if (bookList.value[i].title == title) {
-            return false;
-        }
-    }
-    return true;
+function openAddPage() {
+    bookForDialog.value = null;
+    addOrUpdate.value = true;
+    viewList.value = false;
 }
+
+// //Returns if the given title is unique
+// function validateUniqueTitle(title) {
+//     for (let i = 0; i < bookList.value.length; i++) {
+//         if (bookList.value[i].title == title) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 //Updates the complete status of a book
 // async function updateIsComplete(book, event) {
@@ -104,16 +111,13 @@ function validateUniqueTitle(title) {
             variant="elevated"
             color="blue-darken-1"
             class="ma-3"
-            @click="
-                addOrUpdate = true;
-                dialog = true;
-            "
+            @click="openAddPage"
         >
             <i class="fa fa-plus-circle mr-1" aria-hidden="true"></i>ADD
         </v-btn>
     </v-toolbar>
     <div id = "main" class = "h-100">
-        <v-table color="primary" id = "book-table">
+        <!--<v-table color="primary" id = "book-table">
             <thead color="primary">
                 <tr>
                     <th class="text-center">Title</th>
@@ -164,16 +168,25 @@ function validateUniqueTitle(title) {
                     </td>
                 </tr>
             </tbody>
-        </v-table>
-        <PostComponent 
-            @add-book="addBook"
-            @close-dialog="closeDialog"
-            @update-book="updateBook"
-            :add="addOrUpdate"
-            :titleValidation="validateUniqueTitle"
-            v-model:dialog="dialog"
-            v-model:bookModel="bookForDialog"
+        </v-table>-->
+
+        <Suspense>
+            <BookListComponent 
+                v-if="viewList"
+                @view-details="openUpdateDialog"
             />
+        </Suspense>
+        <Suspense>
+            <PostComponent 
+                v-if="!viewList"
+                @add-book="addBook"
+                @close-dialog="closeDialog"
+                @update-book="updateBook"
+                :add="addOrUpdate"
+                :titleValidation="validateUniqueTitle"
+                v-model:bookModel="bookForDialog"
+                />
+        </Suspense>
     </div>
   </div>
 </template>

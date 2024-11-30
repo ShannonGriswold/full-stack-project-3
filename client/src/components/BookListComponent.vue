@@ -34,8 +34,8 @@ function openDetailsDialog(id) {
 </script>
 
 <template>
-    <div id = "book-list" class="h-100">
-        <v-table color="primary" id = "book-table" class="h-100">
+    <div id = "book-list">
+        <v-table color="primary" id = "book-table">
             <thead color="primary">
                 <tr>
                     <th class="text-center">Title</th>

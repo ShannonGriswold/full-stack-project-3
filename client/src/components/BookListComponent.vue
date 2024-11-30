@@ -9,9 +9,15 @@ const error = ref("");
 
 const emit = defineEmits(['view-details']);
 
+const filter = ref("All");
+
 async function updateBookList() {
     try {
-        bookList.value = await PostService.getBooks();
+        if(filter.value == "All") {
+            bookList.value = await PostService.getBooks();
+        } else {
+            bookList.value = await PostService.getByStatus(filter.value);
+        }
     } catch(err) {
         error.value = err.message;
     }
@@ -35,6 +41,34 @@ function openDetailsDialog(id) {
 
 <template>
     <div id = "book-list">
+        <v-row class="mt-0" dense>
+            <v-col cols="12" md="3" sm="3">
+                <div class="text-subtitle-1 ml-4">Filter By Status: </div>
+            </v-col>
+            <v-col cols="12" sm="7" md="6">
+                <v-select
+                    variant="outlined"
+                    :items="['All', 'Wishlist', 'In Progress', 'Completed']"
+                    density="compact"
+                    id="filter"
+                    v-model="filter"
+                    class="mb-1"
+                ></v-select>
+            </v-col>
+            <v-col cols="12" sm="2">
+                <v-btn
+                    color="success"
+                    variant="elevated"
+                    rounded="xl"
+                    v-on:click="updateBookList"
+                    block
+                    class="mt-1"
+                >
+                    Filter
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-spacer></v-spacer>
         <v-table color="primary" id = "book-table">
             <thead color="primary">
                 <tr>

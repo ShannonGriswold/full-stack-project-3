@@ -23,6 +23,13 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+//Get Posts with a specific status
+router.get('/status/:status', async (req, res) => {
+    let collection = await db.getDatabase().collection("books");
+    let results = await collection.find({status: req.params.status}).toArray();
+    res.send(results).status(200);
+});
+
 //Add Posts
 router.post('/', async (req, res) => {
     try {

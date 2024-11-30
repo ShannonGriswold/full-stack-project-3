@@ -33,6 +33,23 @@ class PostService {
         })
     }
 
+    //Get Books with a certain status
+    static getByStatus(filter) {
+        return new Promise((resolve, reject) => {
+            axios.get(`${url}/status/${filter}`).then((res) => {
+                const data = res.data
+                resolve(
+                    data.map(post => ({
+                    ...post,
+                    }))
+                )
+            })
+            .catch((err) => {
+                reject(err)
+            })
+        })
+    }
+
     //Create Book
     static insertBook(book) {
         return axios.post(url, {

@@ -3,52 +3,69 @@ import axios from 'axios';
 const url = 'http://localhost:5000/api/posts/';
 
 class PostService {
-    //Get Posts
-    static getPosts() {
+    //Get all Books
+    static getBooks() {
         return new Promise((resolve, reject) => {
             axios.get(url).then((res) => {
-              const data = res.data
-              resolve(
-                data.map(post => ({
-                  ...post,
-                }))
-              )
+                const data = res.data
+                resolve(
+                    data.map(post => ({
+                    ...post,
+                    }))
+                )
             })
             .catch((err) => {
-              reject(err)
+                reject(err)
             })
-            // try {
-            //   resolve([{title: "hello", description: "hi", priority: "high", deadline:"hihihihhhihihihihih", isComplete: false}]);
-            // } catch(err) {
-            //   reject(err);
-            // }
-          })
+                // try {
+                //   resolve([{title: "hello", description: "hi", priority: "high", deadline:"hihihihhhihihihihih", isComplete: false}]);
+                // } catch(err) {
+                //   reject(err);
+                // }
+            })
     }
 
-    //Create Post
-    static insertPost(task) {
+    //Get one book by id
+    static getBook(id) {
+        return new Promise((resolve, reject) => {
+            axios.get(`${url}${id}`).then((res) => {
+                const data = res.data
+                resolve(data)
+            })
+            .catch((err) => {
+                reject(err)
+            })
+        })
+    }
+
+    //Create Book
+    static insertBook(book) {
         return axios.post(url, {
-            title: task.title,
-            description: task.description,
-            deadline: task.deadline,
-            priority: task.priority,
-            isComplete: false
+            title: book.title,
+            author: book.author,
+            status: book.status,
+            series: book.series,
+            genre: book.genre,
+            format: book.format,
+            notes: book.notes,
         });
     }
 
-    //Update Post
-    static updatePost(task) {
-        return axios.post(`${url}${task._id}`, {
-            title: task.title,
-            description: task.description,
-            deadline: task.deadline,
-            priority: task.priority,
-            isComplete: task.isComplete
+    //Update Book
+    static updateBook(book) {
+        return axios.post(`${url}${book._id}`, {
+            title: book.title,
+            author: book.author,
+            status: book.status,
+            series: book.series,
+            genre: book.genre,
+            format: book.format,
+            notes: book.notes,
         });
     }
 
-    //Delete Post
-    static deletePost(id) {
+    //Delete Book
+    static deleteBook(id) {
         return axios.delete(`${url}${id}`);
     }
 

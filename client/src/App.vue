@@ -1,206 +1,112 @@
 <script setup>
-/* eslint-disable vue/no-v-model-argument*/
-//The above disable is becuase that rule is best practice for Vue 2, but that syntax is acceptable and recommended in the documentation for Vue 3
-import PostComponent from './components/PostComponent.vue';
-import PostService from './PostService';
+import DetailsComponent from './components/DetailsComponent.vue';
+import BookListComponent from './components/BookListComponent.vue'
 import { ref, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 
-defineEmits(['close-dialog', 'add-task', 'update-task']);
+defineEmits(['close-dialog', 'add-book', 'update-book']);
 
 const toast = useToast();
-const dialog = ref(false);
-const taskList = ref([]);
 const addOrUpdate = ref(true);
-const error = ref("");
+const viewList = ref(true);
+const bookForDialog = ref(null);
 
-async function updateTaskList() {
-    try {
-        taskList.value = await PostService.getPosts();
-    } catch(err) {
-        error.value = err.message;
-    }
-}
-
-updateTaskList();
-
-const taskForDialog = ref({
-    _id: '',
-    title: '',
-    description: '',
-    deadline: '',
-    priority: '',
-    index: -1,
-});
-
-// Closes the dialog and resets the task to display in dialog
+// Closes the dialog and resets the book to display in dialog
 function closeDialog() {
-    dialog.value = false;
-    taskForDialog.value = {
-        _id: '',
-        title: '',
-        description: '',
-        deadline: '',
-        priority: '',
-        index: -1,
-    };
+    viewList.value = true;
+    bookForDialog.value = null;
 }
 
-//Adds the task from the dialog to the list
-async function addTask() {
-    await updateTaskList()
+//Adds the book from the dialog to the list
+async function addBook() {
     closeDialog();
-    toast.success('Task added successfully!');
+    toast.success('Book added successfully!');
 }
 
-
-//Deletes a task from the list
-async function deleteTask(index) {
-    await PostService.deletePost(taskList.value[index]._id);
-    await updateTaskList()
-    toast.success('Task deleted successfully!');
-}
-
-
-//updates a task
-async function updateTask() {
-    await updateTaskList();
+//updates a book
+async function updateBook() {
     closeDialog();
     addOrUpdate.value = true;
-    toast.success('Task updated successfully!');
+    toast.success('Book updated successfully!');
 }
 
-//Opens the update dialog and tells it what task to display
-function openUpdateDialog(index) {
-    taskForDialog.value = {
-        _id: taskList.value[index]._id,
-        title: taskList.value[index].title,
-        description: taskList.value[index].description,
-        deadline: taskList.value[index].deadline,
-        priority: taskList.value[index].priority,
-        isComplete: taskList.value[index].isComplete,
-        index: index,
-    };
+//Opens the update dialog and tells it what book to display
+function openUpdateDialog(id) {
+    bookForDialog.value = id;
     addOrUpdate.value = false;
-    dialog.value = true;
+    viewList.value = false;
 }
 
-//Returns if the given title is unique
-function validateUniqueTitle(title) {
-    for (let i = 0; i < taskList.value.length; i++) {
-        if (taskList.value[i].title == title) {
-            return false;
-        }
-    }
-    return true;
-}
-
-//Updates the complete status of a task
-async function updateIsComplete(task, event) {
-    task.isComplete = event.target.checked;
-    await PostService.updatePost(task);
-    await updateTaskList();
+function openAddPage() {
+    bookForDialog.value = null;
+    addOrUpdate.value = true;
+    viewList.value = false;
 }
 </script>
 
 <template>
   <div id = "app">
-    <v-toolbar color="primary">
-        <v-toolbar-title class="text-center">
-            <i class="fa fa-bars" aria-hidden="true"></i>
-            FRAMEWORKS
-        </v-toolbar-title>
-        <v-btn
-            variant="elevated"
-            color="blue-darken-1"
-            class="ma-3"
-            @click="
-                addOrUpdate = true;
-                dialog = true;
-            "
-        >
-            <i class="fa fa-plus-circle mr-1" aria-hidden="true"></i>ADD
-        </v-btn>
-    </v-toolbar>
-    <v-table color="primary">
-        <thead color="primary">
-            <tr>
-                <th class="text-center">Title</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">Deadline</th>
-                <th class="text-center">Priority</th>
-                <th class="text-center">Is Complete</th>
-                <th class="text-center">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(task, index) in taskList" :key="task.title">
-                <td class="text-center">{{ task.title }}</td>
-                <td class="text-center">{{ task.description }}</td>
-                <td class="text-center">
-                    {{
-                        task.deadline.substring(5, 7) +
-                        '/' +
-                        task.deadline.substring(8) +
-                        '/' +
-                        (task.deadline.substring(0, 4) % 100)
-                    }}
-                </td>
-                <td class="text-center">{{ task.priority }}</td>
-                <td class="text-center">
-                    <v-checkbox-btn
-                        :id="'checkbox' + index"
-                        @change="updateIsComplete(task, $event)"
-                        class="d-inline-flex align-center"
-                    ></v-checkbox-btn>
-                </td>
-                <td class="text-center pa-4">
-                    <template v-if="!task.isComplete">
-                        <v-btn
-                            color="blue-darken-1"
-                            @click="openUpdateDialog(index)"
-                            class="w-50"
-                            min-width="100"
-                        >
-                            <i
-                                class="fa fa-pencil-square-o mr-1"
-                                aria-hidden="true"
-                            ></i
-                            >UPDATE
-                        </v-btn>
-                        <br />
-                    </template>
-                    <v-btn
-                        color="red"
-                        @click="deleteTask(index)"
-                        class="w-50"
-                        min-width="100"
+    <v-sheet 
+        color="primary" 
+        class = "pb-3 mb-3 mt-0" 
+        id="page-header"
+    >
+        <v-row dense class="pt-6 pt-md-2">
+            <v-col cols="12" md="8" offset-md="2">
+                <div id="page-title" class="text-h1 text-center">
+                    <img
+                        class="mt-3"
+                        alt="A stack of books"
+                        src="./assets/books-logo.png"
                     >
-                        <i
-                            class="fa fa-times-circle mr-1"
-                            aria-hidden="true"
-                        ></i
-                        >DELETE
-                    </v-btn>
-                </td>
-            </tr>
-        </tbody>
-    </v-table>
-      <PostComponent 
-        @add-task="addTask"
-        @close-dialog="closeDialog"
-        @update-task="updateTask"
-        :add="addOrUpdate"
-        :titleValidation="validateUniqueTitle"
-        v-model:dialog="dialog"
-        v-model:taskModel="taskForDialog"
-        />
+                    Book Tracker
+                </div>
+            </v-col>
+            <v-col cols="12" md="2" class="text-right" align-self="end">
+                <v-btn
+                    v-if="viewList"
+                    variant="elevated"
+                    color="blue-darken-1"
+                    class="mr-3 mb-3"
+                    size="large"
+                    rounded="xl"
+                    @click="openAddPage"
+                >
+                    <i class="fa fa-plus-circle mr-1" aria-hidden="true"></i>ADD
+                </v-btn>
+            </v-col>
+        </v-row>
+    </v-sheet>
+    <div id = "main">
+        <v-row class="mb-0">
+            <v-col cols="12" lg="8" offset-lg="2" md="10" offset-md="1" class="pt-0">
+                <Suspense>
+                    <BookListComponent 
+                        v-if="viewList"
+                        @view-details="openUpdateDialog"
+                    />
+                    <template #fallback><div style="background-color: white;">Loading...</div></template>
+                </Suspense>
+                <Suspense>
+                    <DetailsComponent 
+                        v-if="!viewList"
+                        @add-book="addBook"
+                        @close-dialog="closeDialog"
+                        @update-book="updateBook"
+                        :add="addOrUpdate"
+                        :bookID="bookForDialog"
+                        />
+                    <template #fallback><div style="background-color: white;">Loading...</div></template>
+                </Suspense>
+            </v-col>
+        </v-row>
+    </div>
   </div>
 </template>
 
 <style>
 #app {
-    background-color: #59320b;
+    background-color: #402102;
     background-image: url("./assets/background.png");
     background-repeat: repeat;
     background-position: bottom;

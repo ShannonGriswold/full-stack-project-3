@@ -106,7 +106,7 @@ function openAddPage() {
 
 <style>
 #app {
-    background-color: #402102;
+    background-color: #59320b;
     background-image: url("./assets/background.png");
     background-repeat: repeat;
     background-position: bottom;

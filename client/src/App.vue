@@ -199,5 +199,18 @@ async function updateIsComplete(task, event) {
 </template>
 
 <style>
-
+#app {
+    background-color: #59320b;
+    background-image: url("./assets/background.png");
+    background-repeat: repeat;
+    background-position: bottom;
+    min-height: 100vh;
+    margin:0;
+}
+#page-title {
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+#page-header {
+    margin-bottom: 0;
+}
 </style>

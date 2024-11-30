@@ -20,8 +20,6 @@ async function updateBookList() {
 
 await updateBookList();
 
-// const bookForDialog = ref(null);
-
 //Deletes a book from the list
 async function deleteBook(id) {
     await PostService.deleteBook(id);
@@ -32,24 +30,17 @@ async function deleteBook(id) {
 //Opens the details dialog and tells it what book to display
 function openDetailsDialog(id) {
     emit('view-details', id);
-    // bookForDialog.value = id;
-    // addOrUpdate.value = false;
-    // dialog.value = true;
 }
 </script>
 
 <template>
-    <div id = "book-list">
-        <v-table color="primary" id = "book-table">
+    <div id = "book-list" class="h-100">
+        <v-table color="primary" id = "book-table" class="h-100">
             <thead color="primary">
                 <tr>
                     <th class="text-center">Title</th>
                     <th class="text-center">Author</th>
                     <th class="text-center">Reading Status</th>
-                    <th class="text-center">Series</th>
-                    <th class="text-center">Genre</th>
-                    <th class="text-center">Format</th>
-                    <th class="text-center">Notes</th>
                     <th class="text-center">Action</th>
                 </tr>
             </thead>
@@ -58,16 +49,13 @@ function openDetailsDialog(id) {
                     <td class="text-center">{{ book.title }}</td>
                     <td class="text-center">{{ book.author }}</td>
                     <td class="text-center">{{ book.status }}</td>
-                    <td class="text-center">{{ book.series }}</td>
-                    <td class="text-center">{{ book.genre }}</td>
-                    <td class="text-center">{{ book.format }}</td>
-                    <td class="text-center">{{ book.notes }}</td>
                     <td class="text-center pa-4">
                         <v-btn
                             color="blue-darken-1"
                             @click="openDetailsDialog(book._id)"
                             class="w-50"
                             min-width="100"
+                            rounded="xl"
                         >
                             <i
                                 class="fa fa-pencil-square-o mr-1"
@@ -81,6 +69,7 @@ function openDetailsDialog(id) {
                             @click="deleteBook(book._id)"
                             class="w-50"
                             min-width="100"
+                            rounded="xl"
                         >
                             <i
                                 class="fa fa-times-circle mr-1"
@@ -97,5 +86,7 @@ function openDetailsDialog(id) {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+#book-list {
+    background-color: white;
+}
 </style>

@@ -17,12 +17,7 @@ class PostService {
             .catch((err) => {
                 reject(err)
             })
-                // try {
-                //   resolve([{title: "hello", description: "hi", priority: "high", deadline:"hihihihhhihihihihih", isComplete: false}]);
-                // } catch(err) {
-                //   reject(err);
-                // }
-            })
+        })
     }
 
     //Get one book by id
@@ -48,6 +43,10 @@ class PostService {
             genre: book.genre,
             format: book.format,
             notes: book.notes,
+            priority: book.priority,
+            progress: book.progress,
+            rating: book.rating,
+            date: book.date,
         });
     }
 
@@ -61,6 +60,10 @@ class PostService {
             genre: book.genre,
             format: book.format,
             notes: book.notes,
+            priority: book.priority,
+            progress: book.progress,
+            rating: book.rating,
+            date: book.date,
         });
     }
 

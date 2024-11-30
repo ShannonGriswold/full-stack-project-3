@@ -45,7 +45,7 @@ function openDetailsDialog(id) {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(book) in bookList" :key="book.title">
+                <tr v-for="(book) in bookList" :key="book._id">
                     <td class="text-center">{{ book.title }}</td>
                     <td class="text-center">{{ book.author }}</td>
                     <td class="text-center">{{ book.status }}</td>

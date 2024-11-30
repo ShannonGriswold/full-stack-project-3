@@ -195,7 +195,6 @@ async function validateBook(adding) {
                 </v-col>
             </v-row>
             <v-form id="book-form" ref="form" validate-on="submit">
-                <p>Id: {{ bookOriginal._id}}</p>
                 <v-row>
                     <v-col cols="12" sm="3" md="2">
                         <div class="text-subtitle-1 font-weight-bold"><span v-if="editing" class="text-red">*</span>Title: </div>

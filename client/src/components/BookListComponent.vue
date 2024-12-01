@@ -14,6 +14,7 @@ const filter = ref("All");
 //This is the current filter being displayed
 const filterDisplay = ref("All");
 
+//Updates the list of books shown based on the filter
 async function updateBookList() {
     try {
         if(filter.value == "All") {
@@ -25,9 +26,9 @@ async function updateBookList() {
     } catch(err) {
         error.value = err.message;
     }
-    console.log(bookList.value);
 }
 
+//sets the initial book list shown on load
 await updateBookList();
 
 //Deletes a book from the list
@@ -72,7 +73,7 @@ function openDetailsDialog(id) {
                 </v-btn>
             </v-col>
         </v-row>
-        <div class="text-h4 pl-4">Currently displaying {{filterDisplay}} books</div>
+        <div class="text-h4 pl-4 mt-3">Currently displaying {{filterDisplay}} books</div>
         <v-spacer></v-spacer>
         <v-table id = "book-table" class="mt-3">
             <thead>

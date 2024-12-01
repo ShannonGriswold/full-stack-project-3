@@ -50,7 +50,7 @@ class PostService {
         })
     }
 
-    //Create Book
+    //Create a Book
     static insertBook(book) {
         return axios.post(url, {
             title: book.title,
@@ -67,7 +67,7 @@ class PostService {
         });
     }
 
-    //Update Book
+    //Update a Book
     static updateBook(book) {
         return axios.post(`${url}${book._id}`, {
             title: book.title,
@@ -84,7 +84,7 @@ class PostService {
         });
     }
 
-    //Delete Book
+    //Delete a Book
     static deleteBook(id) {
         return axios.delete(`${url}${id}`);
     }

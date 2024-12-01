@@ -1,7 +1,9 @@
 <script setup>
 import PostService from '../PostService'
 import { ref, defineProps, defineEmits } from 'vue';
+//The original book before any edits are made
 const bookOriginal = ref({});
+//The contents of the book according to the input fields
 const bookDisplay = ref({});
 const editing = ref(false);
 const notesDisplay = ref([]);
@@ -12,9 +14,9 @@ const props = defineProps({
     bookID: String,
 });
 
+//Finds the book to display and if there is no id given use a blank book
 if(props.bookID != null) {
     bookOriginal.value = await PostService.getBook(props.bookID);
-    console.log(bookOriginal.value);
 } else {
     bookOriginal.value = {
         _id: null,
@@ -32,6 +34,8 @@ if(props.bookID != null) {
     };
 }
 
+//set up bookDisplay to be the same as bookOriginal
+//Done this way so that changing bookDisplay does not effect bookOriginal
 bookDisplay.value._id = bookOriginal.value._id;
 bookDisplay.value.title = bookOriginal.value.title;
 bookDisplay.value.author = bookOriginal.value.author;
@@ -45,11 +49,10 @@ bookDisplay.value.progress = bookOriginal.value.progress;
 bookDisplay.value.rating = bookOriginal.value.rating;
 bookDisplay.value.date = bookOriginal.value.date;
 
-console.log(bookDisplay.value.notes);
+//Split the notes into an array because it doesn't display \n properly
 notesDisplay.value = bookOriginal.value.notes.split("\n").map((note, index) => {
     return {key: index, note: note};
 });
-console.log(notesDisplay.value);
 
 if(props.add) {
     editing.value = true;
@@ -59,8 +62,6 @@ if(props.add) {
 
 const emit = defineEmits(['close-dialog', 'add-book', 'update-book']);
 
-
-
 //The error messages to be shown under the text fields
 const errorMessages = ref({
     titleError: '',
@@ -68,10 +69,12 @@ const errorMessages = ref({
     statusError: '',
 });
 
+//Creates a new post using the input field values
 async function createPost() {
     await PostService.insertBook(bookDisplay.value);
 }
 
+//Updates an existing post using the input field values
 async function updatePost() {
     await PostService.updateBook(bookDisplay.value);
 }
@@ -91,6 +94,8 @@ function cancelEdit() {
         closeDialog()
     } else {
         editing.value = false;
+
+        //reset bookDisplay to be same as bookOriginal
         bookDisplay.value._id = bookOriginal.value._id;
         bookDisplay.value.title = bookOriginal.value.title;
         bookDisplay.value.author = bookOriginal.value.author;
@@ -99,6 +104,8 @@ function cancelEdit() {
         bookDisplay.value.genre = bookOriginal.value.genre;
         bookDisplay.value.format = bookOriginal.value.format;
         bookDisplay.value.notes = bookOriginal.value.notes;
+
+        //reset the error messages
         errorMessages.value = {
             titleError: '',
             authorError: '',
@@ -163,6 +170,7 @@ async function validateBook(adding) {
     }
 }
 
+//Determines what the back arrow on screen does based on editing or not
 function backArrow() {
     if(editing.value) {
         cancelEdit();

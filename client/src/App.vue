@@ -17,13 +17,13 @@ function closeDialog() {
     bookForDialog.value = null;
 }
 
-//Adds the book from the dialog to the list
+//Changes the screen after adding a book
 async function addBook() {
     closeDialog();
     toast.success('Book added successfully!');
 }
 
-//updates a book
+//Changes the screen after updating a book
 async function updateBook() {
     closeDialog();
     addOrUpdate.value = true;
@@ -37,6 +37,7 @@ function openUpdateDialog(id) {
     viewList.value = false;
 }
 
+//Opens the add a book page
 function openAddPage() {
     bookForDialog.value = null;
     addOrUpdate.value = true;
@@ -80,24 +81,26 @@ function openAddPage() {
     <div id = "main">
         <v-row class="mb-0">
             <v-col cols="12" lg="8" offset-lg="2" md="10" offset-md="1" class="pt-0">
-                <Suspense>
-                    <BookListComponent 
-                        v-if="viewList"
-                        @view-details="openUpdateDialog"
-                    />
-                    <template #fallback><div style="background-color: white;">Loading...</div></template>
-                </Suspense>
-                <Suspense>
-                    <DetailsComponent 
-                        v-if="!viewList"
-                        @add-book="addBook"
-                        @close-dialog="closeDialog"
-                        @update-book="updateBook"
-                        :add="addOrUpdate"
-                        :bookID="bookForDialog"
+                <div v-if="viewList">
+                    <Suspense>
+                        <BookListComponent 
+                            @view-details="openUpdateDialog"
                         />
-                    <template #fallback><div style="background-color: white;">Loading...</div></template>
-                </Suspense>
+                        <template #fallback><div style="background-color: white;">Loading...</div></template>
+                    </Suspense>
+                </div>
+                <div v-if="!viewList">
+                    <Suspense>
+                        <DetailsComponent 
+                            @add-book="addBook"
+                            @close-dialog="closeDialog"
+                            @update-book="updateBook"
+                            :add="addOrUpdate"
+                            :bookID="bookForDialog"
+                            />
+                        <template #fallback><div style="background-color: white;">Loading...</div></template>
+                    </Suspense>
+                </div>
             </v-col>
         </v-row>
     </div>

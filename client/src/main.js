@@ -11,6 +11,7 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
+//tells the app what to use with vuetify
 const vuetify = createVuetify({
     components,
     directives,
@@ -25,6 +26,7 @@ const vuetify = createVuetify({
 });
 const app = createApp(App);
 
+//Tells the app what the default toast should look like
 const toastOptions = {
     transition: "Vue-Toastification__bounce",
     maxToasts: 20,

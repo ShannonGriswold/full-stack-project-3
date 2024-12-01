@@ -6,8 +6,9 @@ const cors = require('cors');
 const app = express();
 
 //Middleware
-app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.json());
+
 
 //The connection to the database
 const connect = require("./db/connection.js");

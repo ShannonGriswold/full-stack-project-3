@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors(
     {
-        origin: ["https://full-stack-project-3-bpvxsh8lt-shannon-griswolds-projects.vercel.app"],
+        origin: ["https://full-stack-project-3-swart.vercel.app/"],
         mothods: ["POST", "GET", "DELETE"],
         credentials: true
     }

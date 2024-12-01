@@ -2,20 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-//The connection to the database
-const connect = require("./db/connection.js");
 
 const app = express();
 
 //Middleware
 app.use(bodyParser.json());
-app.use(cors(
-    // {
-    //     origin: ["https://full-stack-project-3-swart.vercel.app/"],
-    //     mothods: ["POST", "GET", "DELETE"],
-    //     credentials: true
-    // }
-));
+app.use(cors());
+
+//The connection to the database
+const connect = require("./db/connection.js");
 
 const posts = require('./routes/api/posts');
 

@@ -99,6 +99,11 @@ function cancelEdit() {
         bookDisplay.value.genre = bookOriginal.value.genre;
         bookDisplay.value.format = bookOriginal.value.format;
         bookDisplay.value.notes = bookOriginal.value.notes;
+        errorMessages.value = {
+            titleError: '',
+            authorError: '',
+            statusError: '',
+        };
     }
 }
 
@@ -155,6 +160,14 @@ async function validateBook(adding) {
             await updatePost();
             emit('update-book');
         }
+    }
+}
+
+function backArrow() {
+    if(editing) {
+        cancelEdit();
+    } else {
+        closeDialog();
     }
 }
 </script>

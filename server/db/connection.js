@@ -27,6 +27,7 @@ let db;
 
 module.exports = {
     connectToDatabase: () => {
+        client.connect();
         db = client.db("FullStack");
     },
     getDatabase: () => {

@@ -180,7 +180,7 @@ function backArrow() {
                 variant="elevated"
                 color="grey-lighten-3"
                 rounded="xl"
-                @click="closeDialog"
+                @click="backArrow"
             ></v-btn>
             <v-btn
                 v-if="!editing"

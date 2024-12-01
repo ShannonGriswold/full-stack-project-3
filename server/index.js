@@ -10,11 +10,11 @@ const app = express();
 //Middleware
 app.use(bodyParser.json());
 app.use(cors(
-    {
-        origin: ["https://full-stack-project-3-swart.vercel.app/"],
-        mothods: ["POST", "GET", "DELETE"],
-        credentials: true
-    }
+    // {
+    //     origin: ["https://full-stack-project-3-swart.vercel.app/"],
+    //     mothods: ["POST", "GET", "DELETE"],
+    //     credentials: true
+    // }
 ));
 
 const posts = require('./routes/api/posts');

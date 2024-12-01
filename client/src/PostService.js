@@ -17,12 +17,7 @@ class PostService {
             .catch((err) => {
                 reject(err)
             })
-                // try {
-                //   resolve([{title: "hello", description: "hi", priority: "high", deadline:"hihihihhhihihihihih", isComplete: false}]);
-                // } catch(err) {
-                //   reject(err);
-                // }
-            })
+        })
     }
 
     //Get one book by id
@@ -31,6 +26,23 @@ class PostService {
             axios.get(`${url}${id}`).then((res) => {
                 const data = res.data
                 resolve(data)
+            })
+            .catch((err) => {
+                reject(err)
+            })
+        })
+    }
+
+    //Get Books with a certain status
+    static getByStatus(filter) {
+        return new Promise((resolve, reject) => {
+            axios.get(`${url}/status/${filter}`).then((res) => {
+                const data = res.data
+                resolve(
+                    data.map(post => ({
+                    ...post,
+                    }))
+                )
             })
             .catch((err) => {
                 reject(err)
@@ -48,6 +60,10 @@ class PostService {
             genre: book.genre,
             format: book.format,
             notes: book.notes,
+            priority: book.priority,
+            progress: book.progress,
+            rating: book.rating,
+            date: book.date,
         });
     }
 
@@ -61,6 +77,10 @@ class PostService {
             genre: book.genre,
             format: book.format,
             notes: book.notes,
+            priority: book.priority,
+            progress: book.progress,
+            rating: book.rating,
+            date: book.date,
         });
     }
 

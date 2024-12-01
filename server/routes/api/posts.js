@@ -9,7 +9,6 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     let collection = await db.getDatabase().collection("books");
     let results = await collection.find({}).toArray();
-    // const books = await loadBooksCollection();
     res.send(results).status(200);
 });
 
@@ -24,6 +23,13 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+//Get Posts with a specific status
+router.get('/status/:status', async (req, res) => {
+    let collection = await db.getDatabase().collection("books");
+    let results = await collection.find({status: req.params.status}).toArray();
+    res.send(results).status(200);
+});
+
 //Add Posts
 router.post('/', async (req, res) => {
     try {
@@ -36,6 +42,10 @@ router.post('/', async (req, res) => {
             genre: req.body.genre,
             format: req.body.format,
             notes: req.body.notes,
+            priority: req.body.priority,
+            progress: req.body.progress,
+            rating: req.body.rating,
+            date: req.body.date,
         });
         res.status(201).send(result);
     } catch(err) {
@@ -57,6 +67,10 @@ router.post('/:id', async (req, res) => {
                 genre: req.body.genre,
                 format: req.body.format,
                 notes: req.body.notes,
+                priority: req.body.priority,
+                progress: req.body.progress,
+                rating: req.body.rating,
+                date: req.body.date,
             },
         }
         let result = await collection.updateOne({_id: new mongodb.ObjectId(req.params.id)}, updatedTask);

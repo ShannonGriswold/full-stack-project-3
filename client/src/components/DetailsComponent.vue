@@ -25,6 +25,10 @@ if(props.bookID != null) {
         genre: '',
         format: '',
         notes: '',
+        priority: '',
+        progress: '',
+        rating: '',
+        date: ''
     };
 }
 
@@ -36,6 +40,11 @@ bookDisplay.value.series = bookOriginal.value.series;
 bookDisplay.value.genre = bookOriginal.value.genre;
 bookDisplay.value.format = bookOriginal.value.format;
 bookDisplay.value.notes = bookOriginal.value.notes;
+bookDisplay.value.priority = bookOriginal.value.priority;
+bookDisplay.value.progress = bookOriginal.value.progress;
+bookDisplay.value.rating = bookOriginal.value.rating;
+bookDisplay.value.date = bookOriginal.value.date;
+
 console.log(bookDisplay.value.notes);
 notesDisplay.value = bookOriginal.value.notes.split("\n").map((note, index) => {
     return {key: index, note: note};
@@ -119,6 +128,26 @@ async function validateBook(adding) {
     }
     //If properly filled out tell parent to add or update
     if (filledOut) {
+        //Remove fields that are not used by that status
+        if(bookDisplay.value.status == "Wishlist") {
+            bookDisplay.value.progress = '';
+            bookDisplay.value.rating = '';
+            bookDisplay.value.date = '';
+        } else if (bookDisplay.value.status == "In Progress") {
+            //keep rating and date if it is a reread otherwise clear them
+            if(bookOriginal.value.date || bookOriginal.value.rating) {
+                bookDisplay.value.date = bookOriginal.value.date;
+                bookDisplay.value.rating = bookOriginal.value.rating;
+            } else {
+                bookDisplay.value.rating = '';
+                bookDisplay.value.date = '';
+            }
+            bookDisplay.value.priority = '';
+        } else if (bookDisplay.value.status == "Completed") {
+            bookDisplay.value.priority = '';
+            bookDisplay.value.progress = '';
+        }
+
         if (adding) {
             await createPost();
             emit('add-book');
@@ -166,7 +195,6 @@ async function validateBook(adding) {
                 </v-col>
             </v-row>
             <v-form id="book-form" ref="form" validate-on="submit">
-                <p>Id: {{ bookOriginal._id}}</p>
                 <v-row>
                     <v-col cols="12" sm="3" md="2">
                         <div class="text-subtitle-1 font-weight-bold"><span v-if="editing" class="text-red">*</span>Title: </div>
@@ -219,6 +247,77 @@ async function validateBook(adding) {
                             <v-radio label="Completed" value="Completed"></v-radio>
                         </v-radio-group>
                         <div v-else class="text-body-1">{{ bookOriginal.status }}</div>
+                    </v-col>
+                </v-row>
+                <v-row v-if="bookDisplay.status == 'Wishlist'">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Priority: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <v-radio-group
+                            v-if="editing"
+                            inline
+                            color="primary"
+                            id="priority"
+                            v-model="bookDisplay.priority"
+                        >
+                            <v-radio label="Low" value="Low"></v-radio>
+                            <v-radio label="Medium" value="Medium"></v-radio>
+                            <v-radio label="High" value="High"></v-radio>
+                        </v-radio-group>
+                        <div v-else class="text-body-1">{{ bookOriginal.priority }}</div>
+                    </v-col>
+                </v-row>
+                <v-row v-if="bookDisplay.status == 'In Progress'">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Progress: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <v-text-field
+                            v-if="editing"
+                            placeholder="Progress"
+                            variant="outlined"
+                            id="progress"
+                            v-model="bookDisplay.progress"
+                        ></v-text-field>
+                        <div v-else class="text-body-1">{{ bookOriginal.progress }}</div>
+                    </v-col>
+                </v-row>
+                <v-row v-if="bookDisplay.status == 'Completed'">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Rating: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <v-select
+                            v-if="editing"
+                            placeholder="rating"
+                            variant="outlined"
+                            :items="[1, 2, 3, 4, 5]"
+                            id="rating"
+                            v-model="bookDisplay.rating"
+                        ></v-select>
+                        <div v-else class="text-body-1">{{ bookOriginal.rating }}</div>
+                    </v-col>
+                </v-row>
+                <v-row v-if="bookDisplay.status == 'Completed'">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Completion Date: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <v-text-field
+                            v-if="editing"
+                            variant="outlined"
+                            id="date"
+                            v-model="bookDisplay.date"
+                            type="date"
+                        ></v-text-field>
+                        <div v-else-if="bookOriginal.date" class="text-body-1">{{
+                        bookOriginal.date.substring(5, 7) +
+                        '/' +
+                        bookOriginal.date.substring(8) +
+                        '/' +
+                        (bookOriginal.date.substring(0, 4) % 100)
+                    }}</div>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -338,6 +437,31 @@ async function validateBook(adding) {
                     </v-col>
                 </v-row>
             </v-form>
+            <div v-if="!editing">
+                <div class = "text-h6" v-if="bookOriginal.status == 'In Progress' && (bookOriginal.date || bookOriginal.rating)">Completed Before with: </div>
+                <v-row v-if="bookOriginal.status == 'In Progress' && bookOriginal.date">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Completion Date: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <div class="text-body-1">{{
+                        bookOriginal.date.substring(5, 7) +
+                        '/' +
+                        bookOriginal.date.substring(8) +
+                        '/' +
+                        (bookOriginal.date.substring(0, 4) % 100)
+                    }}</div>
+                    </v-col>
+                </v-row>
+                <v-row v-if="bookOriginal.status == 'In Progress' && bookOriginal.rating">
+                    <v-col cols="12" sm="3" md="2">
+                        <div class="text-subtitle-1 font-weight-bold">Rating: </div>
+                    </v-col>
+                    <v-col cols="12" sm="9" md="6">
+                        <div class="text-body-1">{{ bookOriginal.rating }}</div>
+                    </v-col>
+                </v-row>
+            </div>
         </v-container>
     </v-sheet>
 </template>

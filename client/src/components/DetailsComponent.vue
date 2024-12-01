@@ -164,7 +164,7 @@ async function validateBook(adding) {
 }
 
 function backArrow() {
-    if(editing) {
+    if(editing.value) {
         cancelEdit();
     } else {
         closeDialog();

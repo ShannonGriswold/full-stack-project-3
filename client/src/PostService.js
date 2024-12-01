@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:5000/api/posts/';
+const url = 'https://full-stack-project-3-api.vercel.app/api/posts/';
 
 class PostService {
     //Get all Books

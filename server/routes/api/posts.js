@@ -5,14 +5,14 @@ const db = require("../../db/connection.js");
 
 const router = express.Router();
 
-//Get all Posts
+//Get all books
 router.get('/', async (req, res) => {
     let collection = await db.getDatabase().collection("books");
     let results = await collection.find({}).toArray();
     res.send(results).status(200);
 });
 
-//Get one post by id
+//Get one book by id
 router.get('/:id', async (req, res) => {
     let collection = await db.getDatabase().collection("books");
     let result = await collection.findOne({_id: new mongodb.ObjectId(req.params.id)});
@@ -23,14 +23,14 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//Get Posts with a specific status
+//Get books with a specific status
 router.get('/status/:status', async (req, res) => {
     let collection = await db.getDatabase().collection("books");
     let results = await collection.find({status: req.params.status}).toArray();
     res.send(results).status(200);
 });
 
-//Add Posts
+//Add a Book
 router.post('/', async (req, res) => {
     try {
         let collection = await db.getDatabase().collection("books");
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-//Update Posts
+//Update a book
 router.post('/:id', async (req, res) => {
     try {
         let collection = await db.getDatabase().collection("books");
@@ -81,7 +81,7 @@ router.post('/:id', async (req, res) => {
     }
 });
 
-//Delete Posts
+//Delete a book
 router.delete('/:id', async (req, res) => {
     try {
         let collection = await db.getDatabase().collection("books");

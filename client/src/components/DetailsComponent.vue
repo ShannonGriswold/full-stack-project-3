@@ -99,6 +99,11 @@ function cancelEdit() {
         bookDisplay.value.genre = bookOriginal.value.genre;
         bookDisplay.value.format = bookOriginal.value.format;
         bookDisplay.value.notes = bookOriginal.value.notes;
+        errorMessages.value = {
+            titleError: '',
+            authorError: '',
+            statusError: '',
+        };
     }
 }
 
@@ -157,6 +162,14 @@ async function validateBook(adding) {
         }
     }
 }
+
+function backArrow() {
+    if(editing.value) {
+        cancelEdit();
+    } else {
+        closeDialog();
+    }
+}
 </script>
 
 <template>
@@ -167,7 +180,7 @@ async function validateBook(adding) {
                 variant="elevated"
                 color="grey-lighten-3"
                 rounded="xl"
-                @click="closeDialog"
+                @click="backArrow"
             ></v-btn>
             <v-btn
                 v-if="!editing"
